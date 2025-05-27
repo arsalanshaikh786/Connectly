@@ -214,7 +214,13 @@
     function showLoginForm() {
       loginForm.style.display = 'block';
       chatUI.style.display = 'none';
-    }
+    }import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+
+// Inside onAuthStateChanged, when user is logged in:
+await addDoc(collection(db, "loginHistory"), {
+  email: user.email,
+  timestamp: serverTimestamp()
+});
 
     function showChatUI() {
       loginForm.style.display = 'none';
