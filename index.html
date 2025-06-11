@@ -159,18 +159,18 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, setDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getDatabase, ref, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCT_yoIkgcZ6EXSAtuVa-tvHleYa0gcKw0",
-      authDomain: "aralan-882a2.firebaseapp.com",
-      projectId: "aralan-882a2",
-      storageBucket: "aralan-882a2.appspot.com",
-      messagingSenderId: "784133076235",
-      appId: "1:784133076235:web:5be5bb94cb906c7cfa1e0e",
-      measurementId: "G-TF13QSJRL3"
+      apiKey: "AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ",
+      authDomain: "multi-service-app-77dd8.firebaseapp.com",
+      projectId: "multi-service-app-77dd8",
+      storageBucket: "multi-service-app-77dd8.appspot.com",
+      messagingSenderId: "123732555482",
+      appId: "1:123732555482:web:ea47c825e0dbb504f597e3"
     };
 
     const app = initializeApp(firebaseConfig);
