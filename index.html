@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta name="google-site-verification" content="6hn5njmJfBxurOg-nu1lNqvjTRgo-9ec9fVy2dNbg90" />
+<head>
+  <meta name="google-site-verification" content="6hn5njmJfBxurOg-nu1lNqvjTRgo-9ec9fVy2dNbg90" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Connectly - Realtime Chat and Instant Messaging App</title>
-<meta name="description" content="Connectly is a realtime chat web app for instant messaging with friends. Fast, secure, and easy to use." />
-<meta name="keywords" content="Connectly, chat app, realtime chat, instant messaging, online chat, messaging app" />
-<meta property="og:title" content="Connectly - Realtime Chat and Instant Messaging App" />
-<meta property="og:description" content="Connectly is a realtime chat web app for instant messaging with friends. Fast, secure, and easy to use." />
+  <meta name="description" content="Connectly is a realtime chat web app for instant messaging with friends. Fast, secure, and easy to use." />
+  <meta name="keywords" content="Connectly, chat app, realtime chat, instant messaging, online chat, messaging app" />
+  <meta property="og:title" content="Connectly - Realtime Chat and Instant Messaging App" />
+  <meta property="og:description" content="Connectly is a realtime chat web app for instant messaging with friends. Fast, secure, and easy to use." />
   <style>
+    /* Same CSS as your original file */
     body {
       font-family: Arial, sans-serif;
       max-width: 700px;
@@ -16,11 +18,7 @@
       padding: 0 15px;
       background: #f0f0f0;
     }
-    h1 {
-      text-align: center;
-      color: #d32f2f;
-      margin-bottom: 20px;
-    }
+    h1 { text-align: center; color: #d32f2f; margin-bottom: 20px; }
     #loginForm, #chatUI {
       background: white;
       padding: 20px;
@@ -47,9 +45,7 @@
       width: 100%;
       font-size: 1rem;
     }
-    button:hover {
-      background-color: #b71c1c;
-    }
+    button:hover { background-color: #b71c1c; }
     #chatBox {
       border: 1px solid #ccc;
       height: 400px;
@@ -70,15 +66,8 @@
       font-size: 14px;
       position: relative;
     }
-    .message.you {
-      background: #dcf8c6;
-      align-self: flex-end;
-      text-align: right;
-    }
-    .message.other {
-      background: #ececec;
-      align-self: flex-start;
-    }
+    .message.you { background: #dcf8c6; align-self: flex-end; text-align: right; }
+    .message.other { background: #ececec; align-self: flex-start; }
     .sender {
       font-weight: bold;
       color: #555;
@@ -119,13 +108,8 @@
       padding: 8px 15px;
       border-radius: 6px;
     }
-    #logoutBtn:hover {
-      background: #333;
-    }
-    .error {
-      color: red;
-      font-size: 0.9rem;
-    }
+    #logoutBtn:hover { background: #333; }
+    .error { color: red; font-size: 0.9rem; }
     #typingIndicator {
       font-style: italic;
       font-size: 0.9rem;
@@ -136,191 +120,191 @@
 </head>
 <body>
 
-  <h1>Realtime Chat</h1>
+<h1>Realtime Chat</h1>
 
-  <div id="loginForm">
-    <input type="text" id="nameInput" placeholder="Name (for register only)" />
-    <input type="email" id="emailInput" placeholder="Email" />
-    <input type="password" id="passwordInput" placeholder="Password" />
-    <button id="loginBtn">Login</button>
-    <button id="registerBtn" style="margin-top: 8px; background: #388e3c;">Register</button>
-    <p id="errorMsg" class="error"></p>
+<div id="loginForm">
+  <input type="text" id="nameInput" placeholder="Name (for register only)" />
+  <input type="email" id="emailInput" placeholder="Email" />
+  <input type="password" id="passwordInput" placeholder="Password" />
+  <button id="loginBtn">Login</button>
+  <button id="registerBtn" style="margin-top: 8px; background: #388e3c;">Register</button>
+  <p id="errorMsg" class="error"></p>
+</div>
+
+<div id="chatUI" style="display:none;">
+  <div id="welcomeMsg" style="margin-bottom: 10px;"></div>
+  <div id="typingIndicator"></div>
+  <div id="chatBox"></div>
+  <div id="inputArea">
+    <textarea id="messageInput" placeholder="Type here..." rows="1"></textarea>
+    <button id="sendBtn" disabled>Send</button>
   </div>
+  <button id="logoutBtn">Logout</button>
+</div>
 
-  <div id="chatUI" style="display:none;">
-    <div id="welcomeMsg" style="margin-bottom: 10px;"></div>
-    <div id="typingIndicator"></div>
-    <div id="chatBox"></div>
-    <div id="inputArea">
-      <textarea id="messageInput" placeholder="Type here..." rows="1"></textarea>
-      <button id="sendBtn" disabled>Send</button>
-    </div>
-    <button id="logoutBtn">Logout</button>
-  </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, addDoc, collection, onSnapshot, query, orderBy, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getDatabase, ref, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ",
+    authDomain: "multi-service-app-77dd8.firebaseapp.com",
+    projectId: "multi-service-app-77dd8",
+    storageBucket: "multi-service-app-77dd8.appspot.com",
+    messagingSenderId: "123732555482",
+    appId: "1:123732555482:web:ea47c825e0dbb504f597e3"
+  };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBcXm5QQaYCCddVXNgGqTBAszdKEK-0PJQ",
-      authDomain: "multi-service-app-77dd8.firebaseapp.com",
-      projectId: "multi-service-app-77dd8",
-      storageBucket: "multi-service-app-77dd8.appspot.com",
-      messagingSenderId: "123732555482",
-      appId: "1:123732555482:web:ea47c825e0dbb504f597e3"
-    };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  const loginForm = document.getElementById('loginForm');
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const nameInput = document.getElementById('nameInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const errorMsg = document.getElementById('errorMsg');
 
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('emailInput');
-    const passwordInput = document.getElementById('passwordInput');
-    const nameInput = document.getElementById('nameInput');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const errorMsg = document.getElementById('errorMsg');
+  const chatUI = document.getElementById('chatUI');
+  const welcomeMsg = document.getElementById('welcomeMsg');
+  const chatBox = document.getElementById('chatBox');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const typingIndicator = document.getElementById('typingIndicator');
 
-    const chatUI = document.getElementById('chatUI');
-    const welcomeMsg = document.getElementById('welcomeMsg');
-    const chatBox = document.getElementById('chatBox');
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const typingIndicator = document.getElementById('typingIndicator');
+  let currentUser = null;
+  let currentName = "";
+  let typingTimeout;
 
-    let currentUser = null;
-    let currentName = "";
-    let typingTimeout;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const userSnap = await getDoc(doc(db, "users", user.uid));
-        currentName = userSnap.exists() ? userSnap.data().name : user.email;
-        welcomeMsg.textContent = `Welcome, ${currentName}`;
-        showChatUI();
-        listenMessages();
-        listenTyping();
-      } else {
-        showLoginForm();
-      }
-    });
-
-    function showLoginForm() {
-      loginForm.style.display = 'block';
-      chatUI.style.display = 'none';
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      currentName = userSnap.exists() ? userSnap.data().name : user.email;
+      welcomeMsg.textContent = `Welcome, ${currentName}`;
+      showChatUI();
+      listenMessages();
+      listenTyping();
+    } else {
+      showLoginForm();
     }
-});
+  });
 
-    function showChatUI() {
-      loginForm.style.display = 'none';
-      chatUI.style.display = 'block';
-      messageInput.focus();
+  function showLoginForm() {
+    loginForm.style.display = 'block';
+    chatUI.style.display = 'none';
+  }
+
+  function showChatUI() {
+    loginForm.style.display = 'none';
+    chatUI.style.display = 'block';
+    messageInput.focus();
+  }
+
+  loginBtn.onclick = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    } catch (err) {
+      errorMsg.textContent = err.message;
     }
+  };
 
-    loginBtn.onclick = async () => {
-      try {
-        await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-      } catch (err) {
-        errorMsg.textContent = err.message;
-      }
-    };
-
-    registerBtn.onclick = async () => {
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-        await setDoc(doc(db, "users", userCred.user.uid), {
-          email: emailInput.value,
-          name: nameInput.value || emailInput.value
-        });
-      } catch (err) {
-        errorMsg.textContent = err.message;
-      }
-    };
-
-    logoutBtn.onclick = () => {
-      signOut(auth);
-    };
-
-    async function sendMessage() {
-      const text = messageInput.value.trim();
-      if (!text) return;
-      await addDoc(collection(db, 'chatMessages'), {
-        text,
-        sender: currentUser.uid,
-        senderName: currentName,
-        createdAt: serverTimestamp()
+  registerBtn.onclick = async () => {
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        email: emailInput.value,
+        name: nameInput.value || emailInput.value
       });
-      messageInput.value = '';
-      sendBtn.disabled = true;
-      setTyping(false);
+    } catch (err) {
+      errorMsg.textContent = err.message;
     }
+  };
 
-    sendBtn.onclick = sendMessage;
+  logoutBtn.onclick = () => {
+    signOut(auth);
+  };
 
-    messageInput.addEventListener('input', () => {
-      sendBtn.disabled = messageInput.value.trim() === "";
-      setTyping(true);
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+    await addDoc(collection(db, 'chatMessages'), {
+      text,
+      sender: currentUser.uid,
+      senderName: currentName,
+      createdAt: serverTimestamp()
     });
+    messageInput.value = '';
+    sendBtn.disabled = true;
+    setTyping(false);
+  }
 
-    messageInput.addEventListener('keydown', (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
+  sendBtn.onclick = sendMessage;
+
+  messageInput.addEventListener('input', () => {
+    sendBtn.disabled = messageInput.value.trim() === "";
+    setTyping(true);
+  });
+
+  messageInput.addEventListener('keydown', (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function listenMessages() {
+    const q = query(collection(db, 'chatMessages'), orderBy('createdAt'));
+    onSnapshot(q, snapshot => {
+      chatBox.innerHTML = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.classList.add('message');
+        div.classList.add(data.sender === currentUser.uid ? 'you' : 'other');
+        div.innerHTML = `<span class="sender">${data.senderName}</span>${data.text}<div class="timestamp">${formatTimestamp(data.createdAt)}</div>`;
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
     });
+  }
 
-    function listenMessages() {
-      const q = query(collection(db, 'chatMessages'), orderBy('createdAt'));
-      onSnapshot(q, snapshot => {
-        chatBox.innerHTML = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement('div');
-          div.classList.add('message');
-          div.classList.add(data.sender === currentUser.uid ? 'you' : 'other');
-          div.innerHTML = `<span class="sender">${data.senderName}</span>${data.text}<div class="timestamp">${formatTimestamp(data.createdAt)}</div>`;
-          chatBox.appendChild(div);
-        });
-        chatBox.scrollTop = chatBox.scrollHeight;
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return "";
+    const date = timestamp.toDate();
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function setTyping(isTyping) {
+    updateDoc(doc(db, "typing", currentUser.uid), {
+      typing: isTyping,
+      name: currentName
+    }).catch(() => {});
+    clearTimeout(typingTimeout);
+    if (isTyping) {
+      typingTimeout = setTimeout(() => setTyping(false), 2000);
+    }
+  }
+
+  function listenTyping() {
+    onSnapshot(collection(db, 'typing'), (snapshot) => {
+      let text = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (doc.id !== currentUser.uid && data.typing) {
+          text = `${data.name} is typing...`;
+        }
       });
-    }
+      typingIndicator.textContent = text;
+    });
+  }
+</script>
 
-    function formatTimestamp(timestamp) {
-      if (!timestamp) return "";
-      const date = timestamp.toDate();
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function setTyping(isTyping) {
-      updateDoc(doc(db, "typing", currentUser.uid), {
-        typing: isTyping,
-        name: currentName
-      }).catch(() => {});
-      clearTimeout(typingTimeout);
-      if (isTyping) {
-        typingTimeout = setTimeout(() => setTyping(false), 2000);
-      }
-    }
-
-    function listenTyping() {
-      onSnapshot(collection(db, 'typing'), (snapshot) => {
-        let text = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (doc.id !== currentUser.uid && data.typing) {
-            text = `${data.name} is typing...`;
-          }
-        });
-        typingIndicator.textContent = text;
-      });
-    }
-  </script><p style="text-align:center; margin-top: 20px; font-size: 0.9rem; color: #666;">
+<p style="text-align:center; margin-top: 20px; font-size: 0.9rem; color: #666;">
   Web created by <strong>Arsalan</strong>
 </p>
 
